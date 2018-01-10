@@ -5,9 +5,9 @@ Help Documentation
 
 This web app has been developed to estimate the risk of progressing to distant breast cancer recurrence using disease-specific survival typically provided by cancer registries. 
 
-SEER*Stat dic File: the dictionary exported from SEER*Stat software which contains the information describing the layout of the export data file. The user will need to view “all files” instead of “all supported types” to select this file in uploading popup window. Please see the below example for more details.
+SEER\*Stat dic File: the dictionary exported from SEER*Stat software which contains the information describing the layout of the export data file. The user will need to view “all files” instead of “all supported types” to select this file in uploading popup window. Please see the below example for more details.
 
-SEER*Stat data File: the cause-specific survival data generated from SEER*Stat.
+SEER\*Stat data File: the cause-specific survival data generated from SEER*Stat.
 
 CanSurv CSV File: the CSV format output from CanSurv software with parameters for the mixture cure survival models.
 
