@@ -1,0 +1,106 @@
+[System]
+Output filename=P:\srab\Angela\CumulativeIncidence\012617\CS_for cansurv.txt
+Matrix filename=P:\srab\Angela\CumulativeIncidence\012617\CS_for cansurv.ssm
+Database name=Incidence - SEER 9 Regs Research Data, Nov 2016 Sub (1973-2014) <Katrina/Rita Population Adjustment> - Linked To County Attributes - Total U.S., 1969-2015 Counties
+
+[Session Options]
+Type=Survival
+Rate filename=U.S. 1970-2012 by individual year (White, Black, Other (AI/API), Ages 0-99, All races for Other Unspec 1991+ and Unknown)
+Statistic=Cause-Specific Survival
+SurvivalMethod=Actuarial
+SurvivalBeginMonth=Month of diagnosis recode
+SurvivalBeginYear=Year of diagnosis
+SurvivalEndMonth=Month of follow-up recode
+SurvivalEndYear=Year of follow-up recode
+SurvivalVitalStatus=Vital status recode (study cutoff used)
+StudyCutoffDate=12/2014
+LostToFollowupDate=12/2014
+NumberOfIntervals=30
+MonthsPerInterval=12
+RatesDisplayedAs=Proportions
+
+[Export Options]
+GZipped=false
+Variable format=numeric
+File format=DOS/Windows
+Field delimiter=tab
+Missing character=period
+Fields with delimiter in quotes=false
+Remove thousands separators=true
+Flags included=false
+Variable names included=false
+Column Variables as Stats=false
+
+[Life Page Variables]
+Var1Name=Page type
+Var2Name=SEER historic stage LRD
+Var2Base=SEER historic stage A
+Var3Name=Year of diagnosis BC
+Var3Base=Year of diagnosis
+Var4Name=Age breast
+Var4Base=Age recode with <1 year olds
+Var5Name=Interval
+Var6Name=Alive at Start
+Var7Name=Died
+Var8Name=Lost to Followup
+Var9Name=Cause-Specific Survival (Interval)
+Var10Name=Cause-Specific Survival (Cum)
+Var11Name=Cause-Specific SE (Interval)
+Var12Name=Cause-Specific SE (Cum)
+
+[Format=Page type]
+0=Life Page
+1=Summary Page
+2=Z-Statistics Page
+3=Period Life Page
+4=Period Summary Page
+5=Age Std Life Page
+
+[Format=SEER historic stage LRD]
+0=Localized
+1=Regional
+2=Distant
+
+[Format=Year of diagnosis BC]
+0=1985-89
+1=1990-94
+2=1995-99
+3=2000-13
+
+[Format=Age breast]
+0=15-59
+1=60-69
+2=70-84
+
+[Format=Interval]
+1=<1 yr
+2=1-<2 yr
+3=2-<3 yr
+4=3-<4 yr
+5=4-<5 yr
+6=5-<6 yr
+7=6-<7 yr
+8=7-<8 yr
+9=8-<9 yr
+10=9-<10 yr
+11=10-<11 yr
+12=11-<12 yr
+13=12-<13 yr
+14=13-<14 yr
+15=14-<15 yr
+16=15-<16 yr
+17=16-<17 yr
+18=17-<18 yr
+19=18-<19 yr
+20=19-<20 yr
+21=20-<21 yr
+22=21-<22 yr
+23=22-<23 yr
+24=23-<24 yr
+25=24-<25 yr
+26=25-<26 yr
+27=26-<27 yr
+28=27-<28 yr
+29=28-<29 yr
+30=29-<30 yr
+
