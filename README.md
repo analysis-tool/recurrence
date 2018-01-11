@@ -55,6 +55,8 @@ Output
 •	obs_dist_surv: the observed survival for distant stage from SEER\*Stat.
 
 
+
+
 References
 1. Yu B, Tiwari RC, Cronin KA, McDonald C, Feuer EJ. CANSURV: A Windows program for population-based cancer survival analysis. Comput.Methods Programs Biomed. 2005;80(3):195-203.
 2. Yu B, Tiwari RC, Cronin KA, Feuer EJ. Cure fraction estimation from the mixture cure models for grouped survival data. Stat.Med. 2004;23(11):1733-47.
