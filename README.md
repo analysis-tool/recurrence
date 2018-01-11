@@ -24,18 +24,32 @@ Number of Follow-up Years: the range of follow-up years in the output. The defau
 Output
 
 •	cure: the cure fraction estimated from the mixture cure survival model.
+
 •	lambda/k: the estimated parameters of the survival distribution for those not cured.
+
 •	theta: the exponential hazard of the time from recurrence to cancer death.
+
 •	surv_curemodel: the survival estimated from the mixture cure survival model.
+
 •	surv_notcure: the estimated survival for the non-cured fraction.
+
 •	median_surv_notcured: the median survival time for the non-cured fraction.
+
 •	s1_numerical: the numerical estimated survival to recurrence (recurrence-free survival) for the non-cured fraction.
+
 •	G_numerical: the numerical estimated survival to recurrence.
+
 •	CI_numerical: 1-G_numerical, the numerical estimated cumulative incidence of recurrence which is the probability of progressing to cancer recurrence.
+
 •	s1_analytical: the analytical estimated survival to recurrence (recurrence-free survival) for the non-cured fraction.
+
 •	G_analytical: the analytical estimated survival to recurrence.
-•	CI_analytical: 1- G_analytical, the analytical estimated cumulative incidence of recurrence.
+
+•	CI_analytical: 1-G_analytical, the analytical estimated cumulative incidence of recurrence.
+
 •	se_CI_analytical: the standard error of CI_analytical.
-•	obs_surv: the observed survival from SEER*Stat.
-•	obs_dist_surv: the observed survival for distant stage from SEER*Stat.
+
+•	obs_surv: the observed survival from SEER\*Stat.
+
+•	obs_dist_surv: the observed survival for distant stage from SEER\*Stat.
 
