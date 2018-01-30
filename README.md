@@ -8,9 +8,9 @@ This web application has been developed to estimate the risk of progressing to d
 
 Input
 
-•	SEER\*Stat dic File: the dictionary exported from SEER\*Stat software in .dic format which contains the information describing the layout of the export data file. 
+•	SEER\*Stat Dic File: the dictionary file exported from SEER\*Stat software with .dic extension which contains the information describing the layout of the export data file. 
 
-•	SEER\*Stat data File: the cause-specific survival data generated from SEER\*Stat in .txt format.
+•	SEER\*Stat Data File: the cause-specific survival data generated from SEER\*Stat in .txt format.
 
 •	CanSurv CSV File: the CSV format output from CanSurv software including parameters for the mixture cure survival models.
 
@@ -18,11 +18,13 @@ Input
 
 •	Distant Stage Value: the user will need to select the numeric value of distant stage from the listed values of Stage Variable or enter the value manually.
 
-•	Adjustment Factor r: the factor which can be used to adjust the registry-based survival curves for sensitivity analysis. The user may click the up and down arrows to change the value or type in any value. The default value is 1.  
+•	Adjustment Factor r: the factor used to adjust the registry-based survival curves for sensitivity analysis. The user may click the up and down arrows to change the value or type in any value. The default value is 1.  
 
-•	Number of Follow-up Years: the range of follow-up years in the output. The default number is 25. If the maximum number of follow-up years (max.num.year) in the SEER\*Stat data is less than 25, then the default number will be set to the max.num.year. 
+•	Years of Follow-up: the range of follow-up years in the output. The default number is 25. If the maximum number of follow-up years (max.num.year) in the SEER\*Stat data is less than 25, then the default number will be set to the max.num.year. 
 
 Output
+
+•	link: the parametric survival distribution among those not cured specified in CanSurv. 
 
 •	cure: the cure fraction estimated from the mixture cure survival model.
 
