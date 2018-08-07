@@ -3,6 +3,8 @@ https://recurrencerisk.shinyapps.io/recurrence/
 
 Help Documentation
 
+1. Group Data
+
 This web application has been developed to estimate the risk of progressing to distant recurrence using disease-specific survival typically provided by cancer registries. The disease-specific survival is assessed via cause-specific survival using SEER\*Stat software. The cause-specific survival is assumed to follow a mixture-cure model and the risk of recurrence is inferred from the survival among the non-cured fraction. The cure fraction and parametric survival distribution among those not cured are estimated using CanSurv software. The current version can handle Weibull and log-logistic distributions for the non-cured survival.
 
 
@@ -57,6 +59,65 @@ Output
 •	obs_dist_surv: the observed survival for distant stage from SEER\*Stat.
 
 
+2. Individual Data
+
+This web application's individual data feature has been developed to estimate the risk of progressing to distant recurrence using individual surivival data. The cause-specific survival is assumed to follow a mixture-cure model and the risk of recurrence is inferred from the survival among the non-cured fraction. The cure fraction and parametric survival distribution among those not cured will be estimated using R flexsurvcure package. The current version can handle Weibull and log-logistic distributions for the non-cured survival.
+
+Input
+
+• CSV data File: the case-listing unformatted CSV data file exported from SEER\*Stat software or user-generated individual data by other statistical software in the CSV format.
+
+• Strata: the user-defined strata variables which should be categorical coded as integers. All variable names in the data set will be listed for single/multiple selection.
+
+• Covariates: the covariates defined in the mixture cure survival model which should be categorical coded as integers.
+    
+• Time Variable: the variable specified as follow-up time in the survival model.
+    
+• Event Variable: the status indicator, 0=alive, 1=dead (due to cancer). Note that, dead events due to other causes should be defined as censoring events.
+    
+• Distribution: the latency distribution for the cure model (non-cured survival). The current version can handle Weibull and log-logistic distributions.
+    
+• Stage Variable: the stage variable defined in SEER\*Stat data. All variable names in the data set will be listed after uploading the SEER\*Stat files. If there are more than 1 stage variable, the user will need to select the one which contains the distant stage or input the stage variable name manually.
+    
+• Distant Stage Value: the user will need to select the numeric value of distant stage from the listed values of Stage Variable or enter the value manually.
+    
+• Adjustment Factor r: the factor used to adjust the registry-based survival curves for sensitivity analysis. The user may click the up and down arrows to change the value or type in any value. The default value is 1.
+    
+• Years of Follow-up: the range of follow-up years in the output. The default number is 25. If the maximum number of follow-up years (max.num.year) in the SEER\*Stat data is less than 25, then the default number will be updated to the max.num.year. 
+
+Output
+
+•	link: the parametric survival distribution among those not cured specified in CanSurv. 
+
+•	cure: the cure fraction estimated from the mixture cure survival model.
+
+•	lambda/k: the estimated parameters of the survival distribution for those not cured.
+
+•	theta: the exponential hazard of the time from recurrence to cancer death.
+
+•	surv_curemodel: the survival estimated from the mixture cure survival model.
+
+•	surv_notcure: the estimated survival for the non-cured fraction.
+
+•	median_surv_notcured: the median survival time for the non-cured fraction.
+
+•	s1_numerical: the numerical estimated survival to recurrence (recurrence-free survival) for the non-cured fraction.
+
+•	G_numerical: the numerical estimated survival to recurrence.
+
+•	CI_numerical: 1-G_numerical, the numerical estimated cumulative incidence of recurrence which is the probability of progressing to cancer recurrence.
+
+•	s1_analytical: the analytical estimated survival to recurrence (recurrence-free survival) for the non-cured fraction.
+
+•	G_analytical: the analytical estimated survival to recurrence.
+
+•	CI_analytical: 1-G_analytical, the analytical estimated cumulative incidence of recurrence.
+
+•	se_CI_analytical: the standard error of CI_analytical.
+
+•	obs_surv: the observed survival from SEER\*Stat.
+
+•	obs_dist_surv: the observed survival for distant stage from SEER\*Stat.
 
 
 References
