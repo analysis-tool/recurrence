@@ -2,17 +2,28 @@ library(SEER2R)
 library(flexsurvcure)
 library(data.table)
 
+### choices.stagevalues function
+###   - data: group data for tab1 or individual data for tab2
+###   - stagevar: stage variable
+### 
+### maxfup.group function
+###   - data: group data for tab1
+###
+### maxfup.individual function
+###   - data: individual data for tab2
+###   - timevar: time variable in indiviual data set
+###
 ### recurrence risk functions: recurrencerisk.group for tab1 & recurrencerisk.individual for tab2
 ### recurrencerisk.group function
-###   - datafile1: seer*stat .dic file
-###   - datafile2: seer*stat .txt file
-###   - datafile3: cansurv .csv file
+###   - data: group data from seer*stat data files
+###   - data.cansurv:  the CSV format output data from cansurv software 
 ###   - stagevar: stage variable
-###   - stage.dist.value: distant stage Value
+###   - stage.dist.value: distant stage Value 
 ###   - adj.r: adjustment factor r
+###   - fup.value: specified followup year for output
 ###
 ### recurrencerisk.inidividual function
-###   - datafile: .csv data file
+###   - data: individual data from .csv data file
 ###   - stratum: stratum variable
 ###   - covar: covariate
 ###   - timevar: time variable
@@ -21,10 +32,35 @@ library(data.table)
 ###   - stage.dist.value: distant stage Value
 ###   - adj.r: adjustment factor r
 ###   - link: the latency distribution 
+###   - fup.value: specified followup year for output
 
-recurrencerisk.group<-function(datafile1,datafile2,datafile3,stagevar,stage.dist.value,adj.r){
-  seerdata <- read.SeerStat(datafile1,datafile2)
-  csdata <- read.csv(datafile3,stringsAsFactors=F,check.names=F)
+
+choices.stagevalues <- function(data,stagevar){
+  data<-data.frame(data)
+  if (stagevar == "") return()
+  stage.values<-sort(unique(data[,stagevar]))
+  return(stage.values)
+}
+
+maxfup.group<-function(data)({
+  fup.uni<-unique(data[,"Interval"])
+  if (is.null(fup.uni)) return()
+  fup.uni.sort <- sort(fup.uni,decreasing=T,na.last = NA)
+  return(fup.uni.sort[1])
+})
+
+maxfup.individual<-function(data,timevar)({
+  data<-data.frame(data)
+  if (timevar == "") return()
+  fup.uni<-unique(data[,timevar])
+  if (is.null(fup.uni)) return()
+  fup.uni.sort <- sort(fup.uni,decreasing=T,na.last = NA)
+  return(fup.uni.sort[1])
+})
+
+recurrencerisk.group<-function(data,data.cansurv,stagevar,stage.dist.value,adj.r,fup.value){
+  seerdata<-data
+  csdata <- data.cansurv
   cnames.seer <- colnames(seerdata)
   cnames.cs <- colnames(csdata)
   RR <- adj.r
@@ -38,8 +74,7 @@ recurrencerisk.group<-function(datafile1,datafile2,datafile3,stagevar,stage.dist
   }
   
   stage.dist.name <- stagevar
-  fup.uni<-unique(seerdata[,"Interval"])
-  interval.max <- sort(fup.uni,decreasing=T,na.last = NA)[1]
+  int.max.out <- fup.value
   
   surv.name <- cnames.seer[which(grepl("Survival", cnames.seer)==T & grepl("Cum", cnames.seer)==T)]
   survse.name <- cnames.seer[which(grepl("SE", cnames.seer)==T & grepl("Cum", cnames.seer)==T)]
@@ -607,7 +642,7 @@ recurrencerisk.group<-function(datafile1,datafile2,datafile3,stagevar,stage.dist
   colnames(out)[which(colnames(out)=="fup")] <- "followup"
   othervar<-allvar.seer[which(!allvar.seer %in% allvar)]
   
-  out <- out[which(out$Interval<=interval.max),]
+  out <- out[which(out$Interval<=int.max.out),]
   out.cols.keep<-c("followup","link","r","cure","lambda","k","theta",
                    "surv_curemodel","surv_notcured","median_surv_notcured",
                    "s1_numerical","G_numerical","CI_numerical",
@@ -624,9 +659,8 @@ recurrencerisk.group<-function(datafile1,datafile2,datafile3,stagevar,stage.dist
   return(out)
 } # end of function recurrencerisk.group
 
-recurrencerisk.individual<-function(datafile,stratum,covar,timevar,eventvar,stagevar,stage.dist.value,adj.r,link){
-  data.tab2<-fread(datafile)
-  data<-data.frame(data.tab2)
+recurrencerisk.individual<-function(data,stratum,covar,timevar,eventvar,stagevar,stage.dist.value,adj.r,link,fup.value){
+  data<-data.frame(data)
   RR <- adj.r
   if(link=="Weibull"){
     distribution<-"weibull"
@@ -654,6 +688,7 @@ recurrencerisk.individual<-function(datafile,stratum,covar,timevar,eventvar,stag
   data.nm <- eval(parse(text=paste("data[",allvar.nm.string,",]")))
   data<-data.nm
   int.max<-max(data[,timevar],na.rm=T) 
+  int.max.out<-fup.value
   
   allvar<-c(covar,stratum)
   nallvar<-length(allvar)
@@ -1101,6 +1136,7 @@ recurrencerisk.individual<-function(datafile,stratum,covar,timevar,eventvar,stag
   out[,"CI_analytical"] <- 1-out$G_analytical
   out[,"link"]<-link
   
+  out <- out[which(out$fup<=int.max.out),]
   out <- out[,c(stratum,covar,"fup","link","r","cure","lambda","k","theta",
                 "surv_curemodel","surv_notcured","median_surv_notcured",
                 "s1_numerical","G_numerical","CI_numerical",
@@ -1115,25 +1151,45 @@ recurrencerisk.individual<-function(datafile,stratum,covar,timevar,eventvar,stag
 datafile1.tab1<-"P:/srab/Angela/CumulativeIncidence/shiny/flexsurvcure/data/groupdata_example_seer.dic"
 datafile2.tab1<-"P:/srab/Angela/CumulativeIncidence/shiny/flexsurvcure/data/groupdata_example_seer.txt"
 datafile3.tab1<-"P:/srab/Angela/CumulativeIncidence/shiny/flexsurvcure/data/groupdata_example_cansurv.csv"
+
+data.tab1<-read.SeerStat(datafile1.tab1,datafile2.tab1)
+data.cansurv.tab1 <- read.csv(datafile3.tab1,stringsAsFactors=F,check.names=F)
 stagevar.tab1<-"SEER_historic_stage_LRD"
-stage.dist.value.tab1<-2
-adj.r.tab1<-1
-out.tab1<-recurrencerisk.group(datafile1.tab1, datafile2.tab1, datafile3.tab1, 
-                        stagevar.tab1, stage.dist.value.tab1, adj.r.tab1)
+
+### options listed for distant stage values
+stagedist.opt.tab1<-choices.stagevalues(data.tab1,stagevar.tab1)
+### maximum number of follow-up years 
+maxfup.tab1<-maxfup.group(data.tab1)
+
+stage.dist.value.tab1<-2     ### selected from stage values stagedist.opt.tab1
+fup.value.tab1<-25           ### selected from year range 1:maxfup.tab1
+adj.r.tab1<-1                ### number defined by user
+
+out.tab1<-recurrencerisk.group(data.tab1, data.cansurv.tab1, stagevar.tab1, stage.dist.value.tab1, adj.r.tab1, fup.value.tab1)
 
 
 ### tab2 individual data
 datafile.tab2<-"P:/srab/Angela/CumulativeIncidence/shiny/flexsurvcure/data/caselistingdata_example.csv"
+data.tab2<-fread(datafile.tab2)
 timevar.tab2<-"time"
 eventvar.tab2<-"status"
 stagevar.tab2<-"stage"
-stage.dist.value.tab2<-3
 stratum.tab2<-c("stage","agegroup")
 covar.tab2<-"yeargroup"
-adj.r.tab2<-1
+
+### options listed for distant stage values
+stagedist.opt.tab2<-choices.stagevalues(data.tab2,stagevar.tab2)
+### maximum number of follow-up years 
+maxfup.tab2<-maxfup.individual(data.tab2,timevar.tab2)
+
+stage.dist.value.tab2<-3     ### selected from stagedist.opt.tab2
+fup.value.tab2<-20           ### selected from year range 1:maxfup.tab2
+adj.r.tab2<-1                ### number defined by user
 link.tab2<-"Log-logistic"
-out.tab2<-recurrencerisk.individual(datafile.tab2,stratum.tab2,covar.tab2,timevar.tab2,eventvar.tab2,
-                        stagevar.tab2,stage.dist.value.tab2,adj.r.tab2,link.tab2)
+
+
+out.tab2<-recurrencerisk.individual(data.tab2, stratum.tab2, covar.tab2, timevar.tab2, eventvar.tab2,
+                        stagevar.tab2, stage.dist.value.tab2, adj.r.tab2, link.tab2, fup.value.tab2)
 
 
 
