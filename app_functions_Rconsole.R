@@ -35,6 +35,12 @@ library(data.table)
 ###   - fup.value: specified followup year for output
 
 
+choices.vars<- function(data){
+  data<-data.frame(data)
+  cnames <- colnames(data)
+  return(cnames)
+}
+
 choices.stagevalues <- function(data,stagevar){
   data<-data.frame(data)
   if (stagevar == "") return()
@@ -1154,7 +1160,10 @@ datafile3.tab1<-"P:/srab/Angela/CumulativeIncidence/shiny/flexsurvcure/data/grou
 
 data.tab1<-read.SeerStat(datafile1.tab1,datafile2.tab1)
 data.cansurv.tab1 <- read.csv(datafile3.tab1,stringsAsFactors=F,check.names=F)
-stagevar.tab1<-"SEER_historic_stage_LRD"
+
+### options listed for stage variable
+stagevar.opt.tab1<-choices.vars(data.tab1)
+stagevar.tab1<-"SEER_historic_stage_LRD" ### selected from variable list
 
 ### options listed for distant stage values
 stagedist.opt.tab1<-choices.stagevalues(data.tab1,stagevar.tab1)
@@ -1171,11 +1180,14 @@ out.tab1<-recurrencerisk.group(data.tab1, data.cansurv.tab1, stagevar.tab1, stag
 ### tab2 individual data
 datafile.tab2<-"P:/srab/Angela/CumulativeIncidence/shiny/flexsurvcure/data/caselistingdata_example.csv"
 data.tab2<-fread(datafile.tab2)
-timevar.tab2<-"time"
-eventvar.tab2<-"status"
-stagevar.tab2<-"stage"
-stratum.tab2<-c("stage","agegroup")
-covar.tab2<-"yeargroup"
+
+### options listed for variable time/event/stage/stratum/covariate
+var.opt.tab2<-choices.vars(data.tab2)
+timevar.tab2<-"time"                ### selected from variable list var.opt.tab2
+eventvar.tab2<-"status"             ### selected from variable list var.opt.tab2
+stagevar.tab2<-"stage"              ### selected from variable list var.opt.tab2
+stratum.tab2<-c("stage","agegroup") ### selected from variable list var.opt.tab2
+covar.tab2<-"yeargroup"             ### selected from variable list var.opt.tab2
 
 ### options listed for distant stage values
 stagedist.opt.tab2<-choices.stagevalues(data.tab2,stagevar.tab2)
