@@ -2,7 +2,10 @@ library(SEER2R)
 library(flexsurvcure)
 library(data.table)
 
-### choices.stagevalues function
+### choices.vars function: return variable options from the data set
+###   - data: group data for tab1 or individual data for tab2
+###
+### choices.stagevalues function: return value options of stage variable.
 ###   - data: group data for tab1 or individual data for tab2
 ###   - stagevar: stage variable
 ### 
