@@ -61,7 +61,7 @@ Output
 
 2. Individual Data
 
-This web application's individual data feature has been developed to estimate the risk of progressing to distant recurrence using individual surivival data. The cause-specific survival is assumed to follow a mixture-cure model and the risk of recurrence is inferred from the survival among the non-cured fraction. The cure fraction and parametric survival distribution among those not cured will be estimated using R flexsurvcure package. The current version can handle Weibull and log-logistic distributions for the non-cured survival.
+This web application has been extended to estimate the risk of progressing to distant recurrence using individual surivival data. The cause-specific survival is assumed to follow a mixture-cure model and the risk of recurrence is inferred from the survival among the non-cured fraction. The cure fraction and parametric survival distribution among those not cured will be estimated using R flexsurvcure package. The current version can handle Weibull and log-logistic distributions for the non-cured survival.
 
 Input
 
