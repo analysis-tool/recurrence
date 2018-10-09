@@ -684,18 +684,32 @@ recurrencerisk.individual<-function(data,stratum,covar,timevar,eventvar,stagevar
   stage.dist.name <- stagevar
   nstratum<-length(stratum)
   ncovar<-length(covar)
-  stratum.nm.string<-paste("!is.na(data$",stratum,")", collapse=" & ",sep="")
-  covar.nm.string<-paste("!is.na(data$",covar,")", collapse=" & ",sep="")  
-  allvar.nm.string<-paste(stratum.nm.string," & ",covar.nm.string,sep="")
-  if(ncovar==0){
-    allvar.nm.string<-stratum.nm.string
-  }
-  if(nstratum==0){
-    allvar.nm.string<-covar.nm.string
+
+  if(nstratum>0 & ncovar>0){
+    stratum.nm.string<-paste("!is.na(data$",stratum,")", collapse=" & ",sep="")
+    covar.nm.string<-paste("!is.na(data$",covar,")", collapse=" & ",sep="")  
+    allvar.nm.string<-paste(stratum.nm.string," & ",covar.nm.string,sep="")
   }
   
-  data.nm <- eval(parse(text=paste("data[",allvar.nm.string,",]")))
-  data<-data.nm
+  if(ncovar==0 & nstratum>0){
+    stratum.nm.string<-paste("!is.na(data$",stratum,")", collapse=" & ",sep="")
+    allvar.nm.string<-stratum.nm.string
+  }
+  if(nstratum==0 & ncovar>0){
+    covar.nm.string<-paste("!is.na(data$",covar,")", collapse=" & ",sep="")  
+    allvar.nm.string<-covar.nm.string
+  }
+  if(nstratum==0 & ncovar==0){
+    stratum<-"nostratum"
+    data[,"nostratum"]<-0
+  }
+  
+  if(nstratum>0 | ncovar>0){
+    data.nm <- eval(parse(text=paste("data[",allvar.nm.string,",]")))
+    data<-data.nm
+  }
+  
+  
   int.max<-max(data[,timevar],na.rm=T) 
   int.max.out<-fup.value
   
@@ -1146,6 +1160,9 @@ recurrencerisk.individual<-function(data,stratum,covar,timevar,eventvar,stagevar
   out[,"link"]<-link
   
   out <- out[which(out$fup<=int.max.out),]
+  if(nstratum==0 & ncovar==0){
+    stratum<-NULL
+  }
   out <- out[,c(stratum,covar,"fup","link","r","cure","lambda","k","theta",
                 "surv_curemodel","surv_notcured","median_surv_notcured",
                 "s1_numerical","G_numerical","CI_numerical",
@@ -1181,7 +1198,7 @@ out.tab1<-recurrencerisk.group(data.tab1, data.cansurv.tab1, stagevar.tab1, stag
 
 
 ### tab2 individual data
-datafile.tab2<-"P:/srab/Angela/CumulativeIncidence/shiny/flexsurvcure/data/caselistingdata_example.csv"
+datafile.tab2<-"P:/srab/Angela/CumulativeIncidence/shiny/flexsurvcure/data/caselisting_data_test_subset_stage0.csv"
 data.tab2<-fread(datafile.tab2)
 
 ### options listed for variable time/event/stage/stratum/covariate
@@ -1206,10 +1223,7 @@ link.tab2<-"Log-logistic"
 out.tab2<-recurrencerisk.individual(data.tab2, stratum.tab2, covar.tab2, timevar.tab2, eventvar.tab2,
                         stagevar.tab2, stage.dist.value.tab2, adj.r.tab2, link.tab2, fup.value.tab2)
 
-
-
 out.f<-"P:/srab/Angela/CumulativeIncidence/shiny/flexsurvcure/out/recurrence_Rfunctions_test_tab1_groupdata_out.csv"
 write.csv(out.tab1,out.f,quote=F,row.names=F)
 out.f<-"P:/srab/Angela/CumulativeIncidence/shiny/flexsurvcure/out/recurrence_Rfunctions_test_tab2_caselistingdata_out.csv"
 write.csv(out.tab2,out.f,quote=F,row.names=F)
-
