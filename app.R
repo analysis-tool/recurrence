@@ -117,7 +117,7 @@ ui <- fluidPage(
                             ),
                             tabPanel("Help",
                                      br(),
-                                     p("This web application's individual data feature has been developed to estimate the risk of progressing to distant recurrence using individual surivival data. 
+                                     p("This web application has been extended to estimate the risk of progressing to distant recurrence using individual surivival data. 
                                        The cause-specific survival is assumed to follow a mixture-cure model and the risk of recurrence is inferred from the survival among the non-cured fraction. 
                                        The cure fraction and parametric survival distribution among those not cured will be estimated using R flexsurvcure package. 
                                        The current version can handle Weibull and log-logistic distributions for the non-cured survival."),
@@ -193,7 +193,11 @@ server <- function(input, output,session) {
   
   choices.stage = reactive({
     cnames.seer <- colnames(seerdata())
-    return(cnames.seer)
+    if(!is.null(cnames.seer)){
+      int.pos <- which(cnames.seer=="Interval")
+      cnames.seer.sub <- cnames.seer[1:(int.pos-1)]   
+      return(cnames.seer.sub)
+    }
   })
   
   choices.stagevalues = reactive({
@@ -913,7 +917,7 @@ server <- function(input, output,session) {
     stage.dist.name <- input$stage.var.tab2 
     stage.dist.value <- as.numeric(input$stage.dist.value.tab2) 
     RR <- as.numeric(input$r.tab2)
-    int.max <- as.numeric(input$fup.value.tab2)
+    int.max.out <- as.numeric(input$fup.value.tab2)
     link<-input$dist.tab2
     if(link=="Weibull"){
       distribution<-"weibull"
@@ -925,20 +929,31 @@ server <- function(input, output,session) {
     nstratum<-length(stratum)
     ncovar<-length(covar)
 
+    if(nstratum>0 & ncovar>0){
+      stratum.nm.string<-paste("!is.na(seerdata$",stratum,")", collapse=" & ",sep="")
+      covar.nm.string<-paste("!is.na(seerdata$",covar,")", collapse=" & ",sep="")  
+      allvar.nm.string<-paste(stratum.nm.string," & ",covar.nm.string,sep="")
+    }
     
-    stratum.nm.string<-paste("!is.na(seerdata$",stratum,")", collapse=" & ",sep="")
-    covar.nm.string<-paste("!is.na(seerdata$",covar,")", collapse=" & ",sep="")  
-    allvar.nm.string<-paste(stratum.nm.string," & ",covar.nm.string,sep="")
-    if(ncovar==0){
+    if(ncovar==0 & nstratum>0){
+      stratum.nm.string<-paste("!is.na(seerdata$",stratum,")", collapse=" & ",sep="")
       allvar.nm.string<-stratum.nm.string
     }
-    if(nstratum==0){
+    if(nstratum==0 & ncovar>0){
+      covar.nm.string<-paste("!is.na(seerdata$",covar,")", collapse=" & ",sep="")  
       allvar.nm.string<-covar.nm.string
     }
+    if(nstratum==0 & ncovar==0){
+      stratum<-"nostratum"
+      seerdata[,"nostratum"]<-0
+      data<-seerdata
+    }
     
+    if(nstratum>0 | ncovar>0){
+      seerdata.nm <- eval(parse(text=paste("seerdata[",allvar.nm.string,",]")))
+      data<-seerdata.nm
+    }
     
-    seerdata.nm <- eval(parse(text=paste("seerdata[",allvar.nm.string,",]")))
-    data<-seerdata.nm
     int.max<-max(data[,timevar],na.rm=T) 
     
     allvar<-c(covar,stratum)
@@ -1041,7 +1056,6 @@ server <- function(input, output,session) {
     str<-paste("Surv(",timevar,",", eventvar,")~",str,sep="")
     form<-as.formula(str)
     
-    time.count0<-proc.time()
     if(nstratum==0){
       nstratumgroup<-1
     }
@@ -1387,7 +1401,13 @@ server <- function(input, output,session) {
     out[,"G_analytical"]  <- with(out,cure+(1-cure)*s1_analytical)
     out[,"CI_analytical"] <- 1-out$G_analytical
     out[,"link"]<-link
-
+    
+    
+    out <- out[which(out$fup<=int.max.out),]
+    
+    if(nstratum==0 & ncovar==0){
+      stratum<-NULL
+    }
     out <- out[,c(stratum,covar,"fup","link","r","cure","lambda","k","theta",
                   "surv_curemodel","surv_notcured","median_surv_notcured",
                   "s1_numerical","G_numerical","CI_numerical",
