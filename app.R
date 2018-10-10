@@ -804,6 +804,7 @@ server <- function(input, output,session) {
     }
     
     out$s1_numerical[which(out$s1_numerical<0)] <- 0
+    out$s1_analytical[which(out$s1_analytical<0)] <- 0
     out[,"G_numerical"]   <- with(out,cure+(1-cure)*s1_numerical)
     out[,"CI_numerical"]  <- 1-out$G_numerical
     out[,"G_analytical"]  <- with(out,cure+(1-cure)*s1_analytical)
