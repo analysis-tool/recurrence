@@ -759,10 +759,19 @@ recurrencerisk.individual<-function(data,stratum,covar,timevar,eventvar,stagevar
     stratum.group.nvalue<-allvar.group.nvalue[which(allvar %in% stratum)] 
     stratum.all <- expand.grid(stratum.group)
     colnames(stratum.all)<-stratum
-    stratum.nodist<-stratum.all[which(stratum.all[,stage.dist.name]!=stage.dist.value),]
-    if(nstratum==1){
+    if(!stagevar %in% stratum){
+      stratum.nodist<-stratum.all
+    }
+    if(stagevar %in% stratum){
+      stratum.nodist<-stratum.all[which(stratum.all[,stage.dist.name]!=stage.dist.value),] 
+    }
+    if(nstratum==1 & (stagevar %in% stratum)){
       dist.pos<-which(stratum.all[,stage.dist.name]==stage.dist.value)
       stratum.nodist<-expand.grid(stratum.group[[1]][c(-dist.pos)])
+      colnames(stratum.nodist)<-stratum
+    }
+    if(nstratum==1 & (!stagevar %in% stratum)){
+      stratum.nodist<-expand.grid(stratum.group[[1]])
       colnames(stratum.nodist)<-stratum
     }
     out.combo[,"stratum.combo"]<-apply(data.frame(out.combo[,stratum]), 1, x.combo)
@@ -825,9 +834,8 @@ recurrencerisk.individual<-function(data,stratum,covar,timevar,eventvar,stagevar
     if(nstratum>0){
       stratum.value<-stratum.nodist[istratumgroup,]
       stratum.combo<-x.combo(stratum.value)
-      
       stratum.dist.value<-stage.dist.value
-      if(nstratum>1){
+      if(nstratum>1 & (stagevar %in% stratum)){
         stratum.dist.value<-stratum.value
         stratum.dist.value[which(stratum==stage.dist.name)]<-stage.dist.value
       }
@@ -835,6 +843,10 @@ recurrencerisk.individual<-function(data,stratum,covar,timevar,eventvar,stagevar
       data.km <- eval(parse(text=paste("data[",condition.string,",]")))
       dist.string<-paste("data$",stratum,"==",stratum.dist.value, collapse=" & ",sep="")   
       distdata.km <- eval(parse(text=paste("data[",dist.string,",]")))
+      if(!stagevar %in% stratum){
+        dist.string<-paste(condition.string, " & data$", stage.dist.name, "==",stage.dist.value,sep="")   
+        distdata.km <- eval(parse(text=paste("data[",dist.string,",]")))
+      }
     }
     
     if(nstratum==0){
@@ -1199,7 +1211,7 @@ out.tab1<-recurrencerisk.group(data.tab1, data.cansurv.tab1, stagevar.tab1, stag
 
 
 ### tab2 individual data
-datafile.tab2<-"P:/srab/Angela/CumulativeIncidence/shiny/flexsurvcure/data/caselisting_data_test_subset_stage0.csv"
+datafile.tab2<-"P:/srab/Angela/CumulativeIncidence/shiny/flexsurvcure/data/caselistingdata_example.csv"
 data.tab2<-fread(datafile.tab2)
 
 ### options listed for variable time/event/stage/stratum/covariate
