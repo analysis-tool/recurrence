@@ -916,6 +916,7 @@ server <- function(input, output,session) {
     timevar<-input$time.tab2
     eventvar<-input$event.tab2
     stage.dist.name <- input$stage.var.tab2 
+    stagevar <- stage.dist.name
     stage.dist.value <- as.numeric(input$stage.dist.value.tab2) 
     RR <- as.numeric(input$r.tab2)
     int.max.out <- as.numeric(input$fup.value.tab2)
