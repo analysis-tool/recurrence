@@ -49,7 +49,7 @@ ui <- fluidPage(
                         <ul><li> <b>SEER*Stat Dic File</b>: the dictionary file exported from SEER*Stat software with .dic extension which contains the information describing the layout of the export data file.
                        </li><li> <b>SEER*Stat Data File</b>: the cause-specific survival data generated from SEER*Stat in .txt format.
                        </li><li> <b>CanSurv CSV File</b>: the CSV format output from CanSurv software including parameters for the mixture cure survival model.
-                       </li><li> <b>Stage Variable</b>: the stage variable defined in SEER*Stat data. All variable names in the data set will be listed after uploading the SEER*Stat files. If there are more than 1 stage variable, the user will need to select the one which contains the distant stage or input the stage variable name manually.
+                       </li><li> <b>Stage Variable</b>: the stage variable defined in SEER*Stat data. All variable names in the data set will be listed after uploading the SEER*Stat files. If there are more than 1 stage variable, the user will need to select the one which contains the distant stage.
                        </li><li> <b>Distant Stage Value</b>: the user will need to select the numeric value of distant stage from the listed values of Stage Variable or enter the value manually.
                        </li><li> <b>Adjustment Factor r</b>: the factor used to adjust the registry-based survival curves for sensitivity analysis. The user may click the up and down arrows to change the value or type in any value. The default value is 1.
                        </li><li> <b>Years of Follow-up</b>: the range of follow-up years in the output. The default number is 25. If the maximum number of follow-up years (max.num.year) in the SEER*Stat data is less than 25, then the default number will be updated to the max.num.year.
@@ -130,7 +130,7 @@ ui <- fluidPage(
                                           </li><li> <b>Time Variable</b>: the variable specified as follow-up time in the survival model.
                                           </li><li> <b>Event Variable</b>: the status indicator, 0=alive, 1=dead (due to cancer). Note that, dead events due to other causes should be defined as censoring events.
                                           </li><li> <b>Distribution</b>: the latency distribution for the cure model (non-cured survival). The current version can handle Weibull and log-logistic distributions. 
-                                          </li><li> <b>Stage Variable</b>: the stage variable defined in SEER*Stat data. All variable names in the data set will be listed after uploading the SEER*Stat files. If there are more than 1 stage variable, the user will need to select the one which contains the distant stage or input the stage variable name manually.
+                                          </li><li> <b>Stage Variable</b>: the stage variable defined in SEER*Stat data. All variable names in the data set will be listed after uploading the SEER*Stat files. If there are more than 1 stage variable, the user will need to select the one which contains the distant stage.
                                           </li><li> <b>Distant Stage Value</b>: the user will need to select the numeric value of distant stage from the listed values of Stage Variable or enter the value manually.
                                           </li><li> <b>Adjustment Factor r</b>: the factor used to adjust the registry-based survival curves for sensitivity analysis. The user may click the up and down arrows to change the value or type in any value. The default value is 1.
                                           </li><li> <b>Years of Follow-up</b>: the range of follow-up years in the output. The default number is 25. If the maximum number of follow-up years (max.num.year) in the SEER*Stat data is less than 25, then the default number will be updated to the max.num.year.
@@ -513,6 +513,12 @@ server <- function(input, output,session) {
       fit<-NULL
       if(dim(data.sub)[1]>2 & length(which(!is.na(y)))>2 & length(table(y))>2){
         try(fit <- nls(y~exp(-theta*x),start=list(theta=theta0),weights=1/se^2))
+        if(is.null(fit)){
+          errorgroup.str<-paste(allvar.seer,"==",seer.group.combo.igroup, collapse=" & ",sep="")    
+          error.str<-"nls function error in qr.default(.swts * gr): NA/NaN/Inf in foreign function call (arg 1). Theta cannot be estimated. NA returned for the below subgroup: "
+          error.print<-paste(error.str,errorgroup.str,sep="")
+          print(error.print)
+        }
         if(!is.null(fit)){
           theta <- summary(fit)$coefficients[1,1]
           theta.se <- summary(fit)$coefficients[1,2]
@@ -916,7 +922,6 @@ server <- function(input, output,session) {
     timevar<-input$time.tab2
     eventvar<-input$event.tab2
     stage.dist.name <- input$stage.var.tab2 
-    stagevar <- stage.dist.name
     stage.dist.value <- as.numeric(input$stage.dist.value.tab2) 
     RR <- as.numeric(input$r.tab2)
     int.max.out <- as.numeric(input$fup.value.tab2)
