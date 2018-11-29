@@ -353,6 +353,12 @@ recurrencerisk.group<-function(data,data.cansurv,stagevar,stage.dist.value,adj.r
     fit<-NULL
     if(dim(data.sub)[1]>2 & length(which(!is.na(y)))>2 & length(table(y))>2){
       try(fit <- nls(y~exp(-theta*x),start=list(theta=theta0),weights=1/se^2))
+      if(is.null(fit)){
+        errorgroup.str<-paste(allvar.seer,"==",seer.group.combo.igroup, collapse=" & ",sep="")    
+        error.str<-"nls function error in qr.default(.swts * gr): NA/NaN/Inf in foreign function call (arg 1). Theta cannot be estimated. NA returned for the below subgroup: "
+        error.print<-paste(error.str,errorgroup.str,sep="")
+        print(error.print)
+      }
       if(!is.null(fit)){
         theta <- summary(fit)$coefficients[1,1]
         theta.se <- summary(fit)$coefficients[1,2]
@@ -1214,13 +1220,16 @@ out.tab1<-recurrencerisk.group(data.tab1, data.cansurv.tab1, stagevar.tab1, stag
 datafile.tab2<-"P:/srab/Angela/CumulativeIncidence/shiny/flexsurvcure/data/caselistingdata_example.csv"
 data.tab2<-fread(datafile.tab2)
 
+
+
+
 ### options listed for variable time/event/stage/stratum/covariate
 var.opt.tab2<-choices.vars(data.tab2)
 timevar.tab2<-"time"                ### selected from variable list var.opt.tab2
 eventvar.tab2<-"status"             ### selected from variable list var.opt.tab2
 stagevar.tab2<-"stage"              ### selected from variable list var.opt.tab2
 stratum.tab2<-c("stage","agegroup") ### selected from variable list var.opt.tab2
-covar.tab2<-"yeargroup"             ### selected from variable list var.opt.tab2
+covar.tab2<-c("yeargroup")             ### selected from variable list var.opt.tab2
 
 ### options listed for distant stage values
 stagedist.opt.tab2<-choices.stagevalues(data.tab2,stagevar.tab2)
@@ -1239,4 +1248,26 @@ out.tab2<-recurrencerisk.individual(data.tab2, stratum.tab2, covar.tab2, timevar
 out.f<-"P:/srab/Angela/CumulativeIncidence/shiny/flexsurvcure/out/recurrence_Rfunctions_test_tab1_groupdata_out.csv"
 write.csv(out.tab1,out.f,quote=F,row.names=F)
 out.f<-"P:/srab/Angela/CumulativeIncidence/shiny/flexsurvcure/out/recurrence_Rfunctions_test_tab2_caselistingdata_out.csv"
+write.csv(out.tab2,out.f,quote=F,row.names=F)
+
+
+
+#####
+### tab2 individual data
+datafile.tab2<-"P:/srab/Angela/CumulativeIncidence/shiny/flexsurvcure/data/caselisting_data_CSSurvival_nov2016sub.csv"
+data.tab2<-fread(datafile.tab2)
+
+timevar.tab2<-"time"                ### selected from variable list var.opt.tab2
+eventvar.tab2<-"status"             ### selected from variable list var.opt.tab2
+stagevar.tab2<-"stage"       
+stratum.tab2<-c("stage") ### selected from variable list var.opt.tab2
+covar.tab2<-c("yeargroup","agegroup")     
+stage.dist.value.tab2<-2     ### selected from stagedist.opt.tab2
+fup.value.tab2<-25           ### selected from year range 1:maxfup.tab2
+adj.r.tab2<-1                ### number defined by user
+link.tab2<-"Log-logistic"
+
+out.tab2<-recurrencerisk.individual(data.tab2, stratum.tab2, covar.tab2, timevar.tab2, eventvar.tab2,
+                                    stagevar.tab2, stage.dist.value.tab2, adj.r.tab2, link.tab2, fup.value.tab2)
+out.f<-"P:/srab/Angela/CumulativeIncidence/shiny/betaversion/caselisting_data_CSSurvival_nov2016sub_strata_stage_covar_yeargroup_agegroup_out.csv"
 write.csv(out.tab2,out.f,quote=F,row.names=F)
