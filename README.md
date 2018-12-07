@@ -14,7 +14,7 @@ Input
 
 •	SEER\*Stat Data File: the cause-specific survival data generated from SEER\*Stat in .txt format.
 
-•	CanSurv CSV File: the CSV format output from CanSurv software including parameters for the mixture cure survival models.
+•	CanSurv CSV File: the CSV format output from CanSurv software including information on strata/covariates and estimated parameters for the mixture cure survival models.
 
 •	Stage Variable: the stage variable defined in SEER\*Stat data. All the variable names including “stage” will be listed after uploading the SEER\*Stat files. If there are more than 1 stage variable, the user will need to select the one which contains the distant stage.
 
@@ -65,7 +65,7 @@ This web application has been extended to estimate the risk of progressing to di
 
 Input
 
-• CSV data File: the case-listing unformatted CSV data file exported from SEER\*Stat software or user-generated individual data by other statistical software in the CSV format.
+• CSV data File: the case-listing unformatted CSV data file exported from SEER\*Stat software or user-generated individual data by other statistical software in the CSV format. Note that, the original unformatted case-listing SEER\*Stat data may not contain the event variable for death due to cancer or categorical variables for strata and covariates, which requires users to modify the data before uploading.
 
 • Strata: the user-defined strata variables which should be categorical coded as integers. All variable names in the data set will be listed for single/multiple selection.
 
@@ -73,7 +73,7 @@ Input
     
 • Time Variable: the variable specified as follow-up time in the survival model.
     
-• Event Variable: the status indicator, 0=alive, 1=dead (due to cancer). Note that, dead events due to other causes should be defined as censoring events.
+• Event Variable: the status indicator, 0=alive, 1=dead (due to cancer). Note that, dead events due to other causes should be defined as censoring events. the status indicator, 0=alive, 1=dead (due to cancer). Note that, dead events due to other causes should be defined as censoring events. For example, when an unformatted case-listing SEER\*Stat data is used, a patient is dead due to cancer if Vitalstatusrecodestudycutoffus=dead and End_Calc_Vital_Status_Adjusted=dead; and a patient is dead due to other causes if Vitalstatusrecodestudycutoffus=dead and End_Calc_Vital_Status_Adjusted=(untraced or alive).
     
 • Distribution: the latency distribution for the cure model (non-cured survival). The current version can handle Weibull and log-logistic distributions.
     
