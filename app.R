@@ -126,7 +126,7 @@ ui <- fluidPage(
                                           <ul><li> <b>CSV data File</b>: the case-listing unformatted CSV data file exported from SEER*Stat software or user-generated individual data by other statistical software in the CSV format. Note that, 
                                                                          users may need to modify the original unformatted case-listing SEER*Stat data before uploading because 1) it may not contain the event variable for death due to cancer; 
                                                                          2) there may not be categorical but continuous variables for strata and covariates; 
-                                                                         3) the stage variable is categorical but with many levels or with numerical unknown stage values, which needs to be recoded as well for creating better categories.
+                                                                         3) the stage variable is categorical but with many levels or with numerical unknown stage values, the user will need to recode it to better categorize the group.
                                           </li><li> <b>Strata</b>: the user-defined strata variables which should be categorical coded as integers.
                                           </li><li> <b>Covariates</b>: the covariates defined in the mixture cure survival model which should be categorical coded as integers.
                                           </li><li> <b>Time Variable</b>: the variable specified as follow-up time in the survival model.
