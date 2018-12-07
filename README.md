@@ -18,7 +18,7 @@ Input
 
 •	Stage Variable: the stage variable defined in SEER\*Stat data. All the variable names including “stage” will be listed after uploading the SEER\*Stat files. If there are more than 1 stage variable, the user will need to select the one which contains the distant stage.
 
-•	Distant Stage Value: the user will need to select the numeric value of distant stage from the listed values of Stage Variable or enter the value manually.
+•	Distant Stage Value: the user will need to select the numeric value of distant stage from the listed values of Stage Variable.
 
 •	Adjustment Factor r: the factor used to adjust the registry-based survival curves for sensitivity analysis. The user may click the up and down arrows to change the value or type in any value. The default value is 1.  
 
@@ -77,9 +77,9 @@ Input
     
 • Distribution: the latency distribution for the cure model (non-cured survival). The current version can handle Weibull and log-logistic distributions.
     
-• Stage Variable: the stage variable defined in SEER\*Stat data. All variable names in the data set will be listed after uploading the SEER\*Stat files. If there are more than 1 stage variable, the user will need to select the one which contains the distant stage or input the stage variable name manually.
+• Stage Variable: the stage variable defined in SEER\*Stat data. All variable names in the data set will be listed after uploading the SEER\*Stat files. If there are more than 1 stage variable, the user will need to select the one which contains the distant stage.
     
-• Distant Stage Value: the user will need to select the numeric value of distant stage from the listed values of Stage Variable or enter the value manually.
+• Distant Stage Value: the user will need to select the numeric value of distant stage from the listed values of Stage Variable.
     
 • Adjustment Factor r: the factor used to adjust the registry-based survival curves for sensitivity analysis. The user may click the up and down arrows to change the value or type in any value. The default value is 1.
     
