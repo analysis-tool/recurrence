@@ -16,7 +16,7 @@ Input
 
 •	CanSurv CSV File: the CSV format output from CanSurv software including parameters for the mixture cure survival models.
 
-•	Stage Variable: the stage variable defined in SEER\*Stat data. All the variable names including “stage” will be listed after uploading the SEER\*Stat files. If there are more than 1 stage variable, the user will need to select the one which contains the distant stage or input the stage variable name manually. 
+•	Stage Variable: the stage variable defined in SEER\*Stat data. All the variable names including “stage” will be listed after uploading the SEER\*Stat files. If there are more than 1 stage variable, the user will need to select the one which contains the distant stage.
 
 •	Distant Stage Value: the user will need to select the numeric value of distant stage from the listed values of Stage Variable or enter the value manually.
 
