@@ -48,9 +48,9 @@ ui <- fluidPage(
                                      HTML("<b>Input</b>
                         <ul><li> <b>SEER*Stat Dic File</b>: the dictionary file exported from SEER*Stat software with .dic extension which contains the information describing the layout of the export data file.
                        </li><li> <b>SEER*Stat Data File</b>: the cause-specific survival data generated from SEER*Stat in .txt format.
-                       </li><li> <b>CanSurv CSV File</b>: the CSV format output from CanSurv software including parameters for the mixture cure survival model.
+                       </li><li> <b>CanSurv CSV File</b>: the CSV format output from CanSurv software including information on strata/covariates and estimated parameters for the mixture cure survival model.
                        </li><li> <b>Stage Variable</b>: the stage variable defined in SEER*Stat data. All variable names in the data set will be listed after uploading the SEER*Stat files. If there are more than 1 stage variable, the user will need to select the one which contains the distant stage.
-                       </li><li> <b>Distant Stage Value</b>: the user will need to select the numeric value of distant stage from the listed values of Stage Variable or enter the value manually.
+                       </li><li> <b>Distant Stage Value</b>: the user will need to select the numeric value of distant stage from the listed values of Stage Variable.
                        </li><li> <b>Adjustment Factor r</b>: the factor used to adjust the registry-based survival curves for sensitivity analysis. The user may click the up and down arrows to change the value or type in any value. The default value is 1.
                        </li><li> <b>Years of Follow-up</b>: the range of follow-up years in the output. The default number is 25. If the maximum number of follow-up years (max.num.year) in the SEER*Stat data is less than 25, then the default number will be updated to the max.num.year.
                        </li></ul>"),
@@ -117,21 +117,26 @@ ui <- fluidPage(
                             ),
                             tabPanel("Help",
                                      br(),
-                                     p("This web application has been extended to estimate the risk of progressing to distant recurrence using individual surivival data. 
+                                     p("This web application has been extended to estimate the risk of progressing to distant recurrence using individual survival data. 
                                        The cause-specific survival is assumed to follow a mixture-cure model and the risk of recurrence is inferred from the survival among the non-cured fraction. 
                                        The cure fraction and parametric survival distribution among those not cured will be estimated using R flexsurvcure package. 
                                        The current version can handle Weibull and log-logistic distributions for the non-cured survival."),
                                      br(),
                                      HTML("<b>Input</b>
-                                          <ul><li> <b>CSV data File</b>: the case-listing unformatted CSV data file exported from SEER*Stat software or user-generated individual data by other statistical software in the CSV format.
-                                          </li><li> <b>Strata</b>: the user-defined strata variables which should be categorical coded as integers. All variable names in the data set will be listed 
-                                          for single/multiple selection.
+                                          <ul><li> <b>CSV data File</b>: the case-listing unformatted CSV data file exported from SEER*Stat software or user-generated individual data by other statistical software in the CSV format. Note that, 
+                                                                         users may need to modify the original unformatted case-listing SEER*Stat data before uploading because 1) it may not contain the event variable for death due to cancer; 
+                                                                         2) there may not be categorical but continuous variables for strata and covariates; 
+                                                                         3) the stage variable is categorical but with many levels or with numerical unknown stage values, which needs to be recoded as well for creating better categories.
+                                          </li><li> <b>Strata</b>: the user-defined strata variables which should be categorical coded as integers.
                                           </li><li> <b>Covariates</b>: the covariates defined in the mixture cure survival model which should be categorical coded as integers.
                                           </li><li> <b>Time Variable</b>: the variable specified as follow-up time in the survival model.
-                                          </li><li> <b>Event Variable</b>: the status indicator, 0=alive, 1=dead (due to cancer). Note that, dead events due to other causes should be defined as censoring events.
+                                          </li><li> <b>Event Variable</b>: the status indicator, 0=alive, 1=dead (due to cancer). Note that, dead events due to other causes should be defined as censoring events. 
+                                          For example, when an unformatted case-listing SEER*Stat data is used, a patient is dead due to cancer if Vitalstatusrecodestudycutoffus=dead and End_Calc_Vital_Status_Adjusted=dead;
+                                          and a patient is dead due to other causes if Vitalstatusrecodestudycutoffus=dead and End_Calc_Vital_Status_Adjusted=(untraced or alive).
                                           </li><li> <b>Distribution</b>: the latency distribution for the cure model (non-cured survival). The current version can handle Weibull and log-logistic distributions. 
-                                          </li><li> <b>Stage Variable</b>: the stage variable defined in SEER*Stat data. All variable names in the data set will be listed after uploading the SEER*Stat files. If there are more than 1 stage variable, the user will need to select the one which contains the distant stage.
-                                          </li><li> <b>Distant Stage Value</b>: the user will need to select the numeric value of distant stage from the listed values of Stage Variable or enter the value manually.
+                                          </li><li> <b>Stage Variable</b>: the stage variable defined in SEER*Stat data or recoded by the user, which should be the same variable selected in Strata if it is defined as a stratum.
+                                          All variable names in the data set will be listed after uploading the SEER*Stat files. If there are more than 1 stage variable, the user will need to select the one which contains the distant stage.
+                                          </li><li> <b>Distant Stage Value</b>: the user will need to select the numeric value of distant stage from the listed values of Stage Variable.
                                           </li><li> <b>Adjustment Factor r</b>: the factor used to adjust the registry-based survival curves for sensitivity analysis. The user may click the up and down arrows to change the value or type in any value. The default value is 1.
                                           </li><li> <b>Years of Follow-up</b>: the range of follow-up years in the output. The default number is 25. If the maximum number of follow-up years (max.num.year) in the SEER*Stat data is less than 25, then the default number will be updated to the max.num.year.
                                           </li></ul>"),
