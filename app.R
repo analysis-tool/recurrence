@@ -72,7 +72,7 @@ ui <- fluidPage(
                        </li><li> <b>obs_surv</b>: the observed survival from SEER*Stat.
                        </li><li> <b>obs_dist_surv</b>: the observed survival for distant stage from SEER*Stat.
                        </li></ul>"),
-                                     div(HTML("<br>Example available at <a href='https://github.com/recurrencerisk/recurrence/archive/example.zip' target='_blank' download='shinyapp_recurrence_example'>shinyapp_recurrence_example</a>.")),
+                                     div(HTML("<br>Example available at <a href='https://github.com/recurrencerisk/recurrence/blob/example/example.zip' target='_blank' download='shinyapp_recurrence_example'>shinyapp_recurrence_example</a>.")),
                                      br(),
                                      br(),
                                      p("References"),
@@ -200,7 +200,13 @@ server <- function(input, output,session) {
     cnames.seer <- colnames(seerdata())
     if(!is.null(cnames.seer)){
       int.pos <- which(cnames.seer=="Interval")
-      cnames.seer.sub <- cnames.seer[1:(int.pos-1)]   
+      if("Page_type" %in% cnames.seer){
+        pt.pos<-which(cnames.seer=="Page_type")
+        cnames.seer.sub<-cnames.seer[(pt.pos+1):(int.pos-1)]
+      }
+      if(!"Page_type" %in% cnames.seer){
+        cnames.seer.sub<-cnames.seer[1:(int.pos-1)]
+      }
       return(cnames.seer.sub)
     }
   })
