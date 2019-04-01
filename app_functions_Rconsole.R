@@ -2,11 +2,14 @@ library(SEER2R)
 library(flexsurvcure)
 library(data.table)
 
-### choices.vars function: return variable options from the data set
-###   - data: group data for tab1 or individual data for tab2
+### choices.vars function: return variable options from the data set (individual tab)
+###   - data: individual data tab2
+###
+### choices.stagevars function: return stage variable options from the data set (group tab)
+###   - data: group data tab1
 ###
 ### choices.stagevalues function: return value options of stage variable.
-###   - data: group data for tab1 or individual data for tab2
+###   - data: group data or individual data
 ###   - stagevar: stage variable
 ### 
 ### maxfup.group function
@@ -42,6 +45,20 @@ choices.vars<- function(data){
   data<-data.frame(data)
   cnames <- colnames(data)
   return(cnames)
+}
+
+choices.stagevars<- function(data){
+  data<-data.frame(data)
+  cnames <- colnames(data)
+  int.pos <- which(cnames=="Interval")
+  if("Page_type" %in% cnames){
+    pt.pos<-which(cnames=="Page_type")
+    cnames.sub<-cnames[(pt.pos+1):(int.pos-1)]
+  }
+  if(!"Page_type" %in% cnames){
+    cnames.sub<-cnames[1:(int.pos-1)]
+  }
+  return(cnames.sub)
 }
 
 choices.stagevalues <- function(data,stagevar){
@@ -1201,7 +1218,7 @@ data.tab1<-read.SeerStat(datafile1.tab1,datafile2.tab1)
 data.cansurv.tab1 <- read.csv(datafile3.tab1,stringsAsFactors=F,check.names=F)
 
 ### options listed for stage variable
-stagevar.opt.tab1<-choices.vars(data.tab1)
+stagevar.opt.tab1<-choices.stagevars(data.tab1)
 stagevar.tab1<-"SEER_historic_stage_LRD" ### selected from variable list
 
 ### options listed for distant stage values
@@ -1219,9 +1236,6 @@ out.tab1<-recurrencerisk.group(data.tab1, data.cansurv.tab1, stagevar.tab1, stag
 ### tab2 individual data
 datafile.tab2<-"P:/srab/Angela/CumulativeIncidence/shiny/flexsurvcure/data/caselistingdata_example.csv"
 data.tab2<-fread(datafile.tab2)
-
-
-
 
 ### options listed for variable time/event/stage/stratum/covariate
 var.opt.tab2<-choices.vars(data.tab2)
