@@ -121,11 +121,12 @@ Output
 
 
 References
-1. Yu B, Tiwari RC, Cronin KA, McDonald C, Feuer EJ. CANSURV: A Windows program for population-based cancer survival analysis. Comput.Methods Programs Biomed. 2005;80(3):195-203.
-2. Yu B, Tiwari RC, Cronin KA, Feuer EJ. Cure fraction estimation from the mixture cure models for grouped survival data. Stat.Med. 2004;23(11):1733-47.
-3. De Angelis R, Capocaccia R, Hakulinen T, Soderman B, Verdecchia A. Mixture models for cancer survival analysis: application to population-based data with covariates. Stat.Med. 1999;18(4):441-54.
-4. Capocaccia R. Relationships between incidence and mortality in non-reversible diseases. Stat Med. 1993;12(24):2395-415.
-5. Li CS, Taylor JMG, Sy JP. Identifiability of cure models. Statistics & Probability Letters. 2001;54(4):389-95.
-6. Howlader N, Ries LA, Mariotto AB, Reichman ME, Ruhl J, Cronin KA. Improved estimates of cancer-specific survival rates from population-based data. J Natl Cancer Inst. 2010;102(20):1584-98.
+1. Mariotto AB, Zou Z, Zhang F, Howlader N, Kurian AW, Etzioni R. Can We Use Survival Data from Cancer Registries to Learn about Disease Recurrence? The Case of Breast Cancer. Cancer Epidemiol Biomarkers Prev. 2018 Nov; 27(11):1332-1341. 
+2. Yu B, Tiwari RC, Cronin KA, McDonald C, Feuer EJ. CANSURV: A Windows program for population-based cancer survival analysis. Comput.Methods Programs Biomed. 2005;80(3):195-203.
+3. Yu B, Tiwari RC, Cronin KA, Feuer EJ. Cure fraction estimation from the mixture cure models for grouped survival data. Stat.Med. 2004;23(11):1733-47.
+4. De Angelis R, Capocaccia R, Hakulinen T, Soderman B, Verdecchia A. Mixture models for cancer survival analysis: application to population-based data with covariates. Stat.Med. 1999;18(4):441-54.
+5. Capocaccia R. Relationships between incidence and mortality in non-reversible diseases. Stat Med. 1993;12(24):2395-415.
+6. Li CS, Taylor JMG, Sy JP. Identifiability of cure models. Statistics & Probability Letters. 2001;54(4):389-95.
+7. Howlader N, Ries LA, Mariotto AB, Reichman ME, Ruhl J, Cronin KA. Improved estimates of cancer-specific survival rates from population-based data. J Natl Cancer Inst. 2010;102(20):1584-98.
 
 
