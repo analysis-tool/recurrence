@@ -65,7 +65,7 @@ This web application has been extended to estimate the risk of progressing to di
 
 Input
 
-• CSV data File: the case-listing unformatted CSV data file exported from SEER\*Stat software or user-generated individual data by other statistical software in the CSV format. Note that, users may need to modify the original unformatted case-listing SEER\*Stat data before uploading because 1) it may not contain the event variable for death due to cancer; 2) there may not be categorical but continuous variables for strata and covariates; 3) the stage variable is categorical but with many levels or with numerical unknown stage values, which needs to be recoded as well for creating better categories.
+• the case-listing unformatted CSV data file exported from SEER\*Stat software with modification of variables of interest or user-generated individual data by other statistical software in the CSV format. Note that, users may not directly use the original unformatted variables, but need to modify the case-listing SEER\*Stat data before uploading because 1) it may not contain the event variable for death due to cancer; 2) there may not be categorical but continuous variables for strata and covariates; 3) the stage/strata/covariates variables are categorical but with many levels or with numerical unknown values, the user will need to recode it to better categorize the group; 4) the dead events due to other causes should be recoded as censoring events.
 
 • Strata: the user-defined strata variables which should be categorical coded as integers. All variable names in the data set will be listed for single/multiple selection.
 
