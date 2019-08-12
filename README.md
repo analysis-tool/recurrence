@@ -5,14 +5,14 @@ Help Documentation
 
 1. Group Data
 
-This web application has been developed to estimate the risk of progressing to distant recurrence using disease-specific survival typically provided by cancer registries. The disease-specific survival is assessed via cause-specific survival using SEER\*Stat software. The cause-specific survival is assumed to follow a mixture-cure model and the risk of recurrence is inferred from the survival among the non-cured fraction. The cure fraction and parametric survival distribution among those not cured are estimated using CanSurv software. The current version can handle Weibull and log-logistic distributions for the non-cured survival.
+This web application has been developed to estimate the risk of progressing to distant recurrence using disease-specific survival typically provided by cancer registries. The disease-specific survival is assessed via cause-specific survival or relative survival using SEER\*Stat software. The cause-specific survival or relative survival is assumed to follow a mixture-cure model and the risk of recurrence is inferred from the survival among the non-cured fraction. The cure fraction and parametric survival distribution among those not cured are estimated using CanSurv software. The current version can handle Weibull and log-logistic distributions for the non-cured survival.
 
 
 Input
 
 •	SEER\*Stat Dic File: the dictionary file exported from SEER\*Stat software with .dic extension which contains the information describing the layout of the export data file. 
 
-•	SEER\*Stat Data File: the cause-specific survival data generated from SEER\*Stat in .txt format.
+•	SEER\*Stat Data File: the cause-specific survival or relative survival data generated from SEER\*Stat in .txt format.
 
 •	CanSurv CSV File: the CSV format output from CanSurv software including information on strata/covariates and estimated parameters for the mixture cure survival models.
 
@@ -61,7 +61,7 @@ Output
 
 2. Individual Data
 
-This web application has been extended to estimate the risk of progressing to distant recurrence using individual survival data. The cause-specific survival is assumed to follow a mixture-cure model and the risk of recurrence is inferred from the survival among the non-cured fraction. The cure fraction and parametric survival distribution among those not cured will be estimated using R flexsurvcure package. The current version can handle Weibull and log-logistic distributions for the non-cured survival.
+This web application has been extended to estimate the risk of progressing to distant recurrence using individual survival data. The cause-specific survival or relative survival is assumed to follow a mixture-cure model and the risk of recurrence is inferred from the survival among the non-cured fraction. The cure fraction and parametric survival distribution among those not cured will be estimated using R flexsurvcure package. The current version can handle Weibull and log-logistic distributions for the non-cured survival.
 
 Input
 
