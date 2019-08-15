@@ -102,8 +102,14 @@ recurrencerisk.group<-function(data,data.cansurv,stagevar,stage.dist.value,adj.r
   stage.dist.name <- stagevar
   int.max.out <- fup.value
   
-  surv.name <- cnames.seer[which(grepl("Survival", cnames.seer)==T & grepl("Cum", cnames.seer)==T)]
-  survse.name <- cnames.seer[which(grepl("SE", cnames.seer)==T & grepl("Cum", cnames.seer)==T)]
+  if(length(which(grepl("Cause", cnames.seer)==T))>1){
+    surv.name <- cnames.seer[which(grepl("Survival", cnames.seer)==T & grepl("Cum", cnames.seer)==T & grepl("Cause", cnames.seer))]
+    survse.name <- cnames.seer[which(grepl("SE", cnames.seer)==T & grepl("Cum", cnames.seer)==T & grepl("Cause", cnames.seer))]
+  }
+  if(length(which(grepl("Relative", cnames.seer)==T))>1){
+    surv.name <- cnames.seer[which(grepl("Survival", cnames.seer)==T & grepl("Cum", cnames.seer)==T & grepl("Relative", cnames.seer))]
+    survse.name <- cnames.seer[which(grepl("SE", cnames.seer)==T & grepl("Cum", cnames.seer)==T & grepl("Relative", cnames.seer))]
+  }
   int.max.seer <- max(seerdata$Interval,na.rm=T)
   allvar.seer<-cnames.seer[(which(cnames.seer!="Page_type")[1]):(which(cnames.seer=="Interval")-1)]
   cols.keep.seer<-c(allvar.seer,"Interval",surv.name)
@@ -364,17 +370,22 @@ recurrencerisk.group<-function(data,data.cansurv,stagevar,stage.dist.value,adj.r
     seer.group.combo.igroup[which(allvar.seer==stage.dist.name)]<-stage.dist.value
     condition.string<-paste("seerdata.dist$",allvar.seer,"==",seer.group.combo.igroup, collapse=" & ",sep="")    
     data.sub <- eval(parse(text=paste("seerdata.dist[",condition.string,",]")))
-    y <- data.sub[,surv.name] 
-    x <- data.sub$Interval 
-    se <- data.sub[,survse.name]
+    y0 <- data.sub[,surv.name] 
+    x0 <- data.sub$Interval 
+    se0 <- data.sub[,survse.name]
+    y<-y0[which(y0!=0 & se0!=0)]
+    se<-se0[which(y0!=0 & se0!=0)]
+    x<-x0[which(y0!=0 & se0!=0)]
     fit<-NULL
     if(dim(data.sub)[1]>2 & length(which(!is.na(y)))>2 & length(table(y))>2){
-      try(fit <- nls(y~exp(-theta*x),start=list(theta=theta0),weights=1/se^2))
+      try(fit <- nls(y~exp(-theta*x),start=list(theta=theta0),control=nls.control(maxiter=2000),weights=1/se^2))
       if(is.null(fit)){
         errorgroup.str<-paste(allvar.seer,"==",seer.group.combo.igroup, collapse=" & ",sep="")    
-        error.str<-"nls function error in qr.default(.swts * gr): NA/NaN/Inf in foreign function call (arg 1). Theta cannot be estimated. NA returned for the below subgroup: "
+        error.str<-"Theta cannot be estimated due to the nls function error. Please check the data for the below group:"
         error.print<-paste(error.str,errorgroup.str,sep="")
         print(error.print)
+        nls.error.ind[iseergroup]<-1
+        theta.sum[iseergroup,] <- c(as.numeric(seer.group.combo[iseergroup,]),RR,NA,NA)
       }
       if(!is.null(fit)){
         theta <- summary(fit)$coefficients[1,1]
@@ -1065,8 +1076,19 @@ recurrencerisk.individual<-function(data,stratum,covar,timevar,eventvar,stagevar
       
       fup <- 1:int.max
       fit<-NULL
-      if(dim(distdata.km)[1]>2 & length(which(!is.na(distsurv)))>2 & length(table(distsurv))>2){
-        try(fit <- nls(distsurv~exp(-theta*fup),start=list(theta=theta0),weights=1/distsurv.se^2))
+      
+      y<-distsurv[which(distsurv!=0 & distsurv.se!=0)]
+      se<-distsurv.se[which(distsurv!=0 & distsurv.se!=0)]
+      x<-fup[which(distsurv!=0 & distsurv.se!=0)]
+      
+      if(dim(distdata.km)[1]>2 & length(which(!is.na(y)))>2 & length(table(y))>2){
+        try(fit <- nls(y~exp(-theta*x),start=list(theta=theta0),control=nls.control(maxiter=2000),weights=1/se^2))
+        if(is.null(fit)){
+          error.str<-"Theta cannot be estimated due to the nls function. Please check the data for the subgroup."
+          print(error.str)
+          out.combo[rows.add,"theta"] <- NA
+          out.combo[rows.add,"theta.se"] <- NA
+        }
         if(!is.null(fit)){
           theta <- summary(fit)$coefficients[1,1]
           theta.se <- summary(fit)$coefficients[1,2]
@@ -1235,6 +1257,7 @@ out.tab1<-recurrencerisk.group(data.tab1, data.cansurv.tab1, stagevar.tab1, stag
 
 ### tab2 individual data
 datafile.tab2<-"P:/srab/Angela/CumulativeIncidence/shiny/flexsurvcure/data/caselistingdata_example.csv"
+datafile.tab2<-"P:/srab/Angela/CumulativeIncidence/shiny/flexsurvcure/data/caselistingdata_example_full.csv"
 data.tab2<-fread(datafile.tab2)
 
 ### options listed for variable time/event/stage/stratum/covariate
