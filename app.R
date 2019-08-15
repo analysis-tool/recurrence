@@ -40,14 +40,14 @@ ui <- fluidPage(
                             tabPanel("Help",
                                      br(),
                                      p("This web application has been developed to estimate the risk of progressing to distant recurrence using disease-specific survival typically provided by cancer registries. 
-                     The disease-specific survival is assessed via cause-specific survival using SEER*Stat software. 
-                     The cause-specific survival is assumed to follow a mixture-cure model and the risk of recurrence is inferred from the survival among the non-cured fraction. 
+                     The disease-specific survival is assessed via cause-specific survival or or relative survival using SEER*Stat software. 
+                     The cause-specific survival or relative survival is assumed to follow a mixture-cure model and the risk of recurrence is inferred from the survival among the non-cured fraction. 
                      The cure fraction and parametric survival distribution among those not cured are estimated using CanSurv software. 
                      The current version can handle Weibull and log-logistic distributions for the non-cured survival."),
                                      br(),
                                      HTML("<b>Input</b>
                         <ul><li> <b>SEER*Stat Dic File</b>: the dictionary file exported from SEER*Stat software with .dic extension which contains the information describing the layout of the export data file.
-                       </li><li> <b>SEER*Stat Data File</b>: the cause-specific survival data generated from SEER*Stat in .txt format.
+                       </li><li> <b>SEER*Stat Data File</b>: the cause-specific survival or relative survival  data generated from SEER*Stat in .txt format.
                        </li><li> <b>CanSurv CSV File</b>: the CSV format output from CanSurv software including information on strata/covariates and estimated parameters for the mixture cure survival model.
                        </li><li> <b>Stage Variable</b>: the stage variable defined in SEER*Stat data. All variable names in the data set will be listed after uploading the SEER*Stat files. If there are more than 1 stage variable, the user will need to select the one which contains the distant stage.
                        </li><li> <b>Distant Stage Value</b>: the user will need to select the numeric value of distant stage from the listed values of Stage Variable.
@@ -119,7 +119,7 @@ ui <- fluidPage(
                             tabPanel("Help",
                                      br(),
                                      p("This web application has been extended to estimate the risk of progressing to distant recurrence using individual survival data. 
-                                       The cause-specific survival is assumed to follow a mixture-cure model and the risk of recurrence is inferred from the survival among the non-cured fraction. 
+                                       The cause-specific survival or relative survival is assumed to follow a mixture-cure model and the risk of recurrence is inferred from the survival among the non-cured fraction. 
                                        The cure fraction and parametric survival distribution among those not cured will be estimated using R flexsurvcure package. 
                                        The current version can handle Weibull and log-logistic distributions for the non-cured survival."),
                                      br(),
@@ -259,8 +259,14 @@ server <- function(input, output,session) {
     stage.dist.name <- input$stage.var 
     stage.dist.value <- as.numeric(input$stage.dist.value)    
     
-    surv.name <- cnames.seer[which(grepl("Survival", cnames.seer)==T & grepl("Cum", cnames.seer)==T)]
-    survse.name <- cnames.seer[which(grepl("SE", cnames.seer)==T & grepl("Cum", cnames.seer)==T)]
+    if(length(which(grepl("Cause", cnames.seer)==T))>1){
+      surv.name <- cnames.seer[which(grepl("Survival", cnames.seer)==T & grepl("Cum", cnames.seer)==T & grepl("Cause", cnames.seer))]
+      survse.name <- cnames.seer[which(grepl("SE", cnames.seer)==T & grepl("Cum", cnames.seer)==T & grepl("Cause", cnames.seer))]
+    }
+    if(length(which(grepl("Relative", cnames.seer)==T))>1){
+      surv.name <- cnames.seer[which(grepl("Survival", cnames.seer)==T & grepl("Cum", cnames.seer)==T & grepl("Relative", cnames.seer))]
+      survse.name <- cnames.seer[which(grepl("SE", cnames.seer)==T & grepl("Cum", cnames.seer)==T & grepl("Relative", cnames.seer))]
+    }
     int.max.seer <- max(seerdata()$Interval,na.rm=T)
     allvar.seer<-cnames.seer[(which(cnames.seer!="Page_type")[1]):(which(cnames.seer=="Interval")-1)]
     cols.keep.seer<-c(allvar.seer,"Interval",surv.name)
@@ -515,23 +521,28 @@ server <- function(input, output,session) {
     theta0 <- 0.1
     theta.sum <- array(NA,dim=c(nseergroup,nallvar.seer+3))
     colnames(theta.sum)<-c(allvar.seer,"r","theta","theta.se")
-    
+    nls.error.ind<-rep(0,nseergroup)
     for (iseergroup in 1:nseergroup){
       seer.group.combo.igroup<-seer.group.combo[iseergroup,]
       seer.group.combo.igroup[which(allvar.seer==stage.dist.name)]<-stage.dist.value
       condition.string<-paste("seerdata.dist$",allvar.seer,"==",seer.group.combo.igroup, collapse=" & ",sep="")    
       data.sub <- eval(parse(text=paste("seerdata.dist[",condition.string,",]")))
-      y <- data.sub[,surv.name] 
-      x <- data.sub$Interval 
-      se <- data.sub[,survse.name]
+      y0 <- data.sub[,surv.name] 
+      x0 <- data.sub$Interval 
+      se0 <- data.sub[,survse.name]
+      y<-y0[which(y0!=0 & se0!=0)]
+      se<-se0[which(y0!=0 & se0!=0)]
+      x<-x0[which(y0!=0 & se0!=0)]
       fit<-NULL
       if(dim(data.sub)[1]>2 & length(which(!is.na(y)))>2 & length(table(y))>2){
-        try(fit <- nls(y~exp(-theta*x),start=list(theta=theta0),weights=1/se^2))
+        try(fit <- nls(y~exp(-theta*x),start=list(theta=theta0),control=nls.control(maxiter=2000),weights=1/se^2))
         if(is.null(fit)){
           errorgroup.str<-paste(allvar.seer,"==",seer.group.combo.igroup, collapse=" & ",sep="")    
-          error.str<-"nls function error in qr.default(.swts * gr): NA/NaN/Inf in foreign function call (arg 1). Theta cannot be estimated. NA returned for the below subgroup: "
+          error.str<-"Theta cannot be estimated due to the nls function error. Please check the data for the below group:"
           error.print<-paste(error.str,errorgroup.str,sep="")
           print(error.print)
+          nls.error.ind[iseergroup]<-1
+          theta.sum[iseergroup,] <- c(as.numeric(seer.group.combo[iseergroup,]),RR,NA,NA)
         }
         if(!is.null(fit)){
           theta <- summary(fit)$coefficients[1,1]
@@ -587,8 +598,6 @@ server <- function(input, output,session) {
     out.combo$stratum.combo <- apply(data.frame(out.combo[,stratum.vec]), 1, x.combo)
     out.combo$allvar.combo <- apply(data.frame(out.combo[,allvar.vec]), 1, x.combo)
     
-    
-    #### continued 02/05/9018 ####
     for (krow in 1:dim(out.combo)[1]){
       
       start.row <- match(out.combo$stratum.combo[krow],est.matrix$stratum.combo)
@@ -1306,8 +1315,19 @@ server <- function(input, output,session) {
         
         fup <- 1:int.max
         fit<-NULL
-        if(dim(distdata.km)[1]>2 & length(which(!is.na(distsurv)))>2 & length(table(distsurv))>2){
-          try(fit <- nls(distsurv~exp(-theta*fup),start=list(theta=theta0),weights=1/distsurv.se^2))
+        
+        y<-distsurv[which(distsurv!=0 & distsurv.se!=0)]
+        se<-distsurv.se[which(distsurv!=0 & distsurv.se!=0)]
+        x<-fup[which(distsurv!=0 & distsurv.se!=0)]
+        
+        if(dim(distdata.km)[1]>2 & length(which(!is.na(y)))>2 & length(table(y))>2){
+          try(fit <- nls(y~exp(-theta*x),start=list(theta=theta0),control=nls.control(maxiter=2000),weights=1/se^2))
+          if(is.null(fit)){
+            error.str<-"Theta cannot be estimated due to the nls function. Please check the data for the subgroup."
+            print(error.str)
+            out.combo[rows.add,"theta"] <- NA
+            out.combo[rows.add,"theta.se"] <- NA
+          }
           if(!is.null(fit)){
             theta <- summary(fit)$coefficients[1,1]
             theta.se <- summary(fit)$coefficients[1,2]
