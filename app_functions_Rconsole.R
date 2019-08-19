@@ -384,7 +384,6 @@ recurrencerisk.group<-function(data,data.cansurv,stagevar,stage.dist.value,adj.r
         error.str<-"Theta cannot be estimated due to the nls function error. Please check the data for the below group:"
         error.print<-paste(error.str,errorgroup.str,sep="")
         print(error.print)
-        nls.error.ind[iseergroup]<-1
         theta.sum[iseergroup,] <- c(as.numeric(seer.group.combo[iseergroup,]),RR,NA,NA)
       }
       if(!is.null(fit)){
