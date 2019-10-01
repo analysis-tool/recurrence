@@ -12,7 +12,7 @@ Input
 
 •	SEER\*Stat Dic File: the dictionary file exported from SEER\*Stat software with .dic extension which contains the information describing the layout of the export data file. 
 
-•	SEER\*Stat Data File: the cause-specific survival or relative survival data generated from SEER\*Stat in .txt format.
+•	SEER\*Stat Data File: the cause-specific survival or relative survival data generated from SEER\*Stat in .txt format. Note that, if the .txt file is not exported from SEER\*Stat but manually converted, the user should make sure the delimiter used in the txt file is the same as the one specified in the dic file - field delimiter option.
 
 •	CanSurv CSV File: the CSV format output from CanSurv software including information on strata/covariates and estimated parameters for the mixture cure survival models.
 
