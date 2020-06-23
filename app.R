@@ -1,7 +1,11 @@
+#Sys.setenv(http_proxy = "http://webproxy-st.imsweb.com:8080")
+#Sys.setenv(https_proxy = "http://webproxy-st.imsweb.com:8080")
+
 library(shiny)
 library(SEER2R)
 library(flexsurvcure)
 library(data.table)
+library(DT)
 options(shiny.maxRequestSize=40*1024^2)
 
 ui <- fluidPage(
@@ -35,7 +39,7 @@ ui <- fluidPage(
                         mainPanel(
                           tabsetPanel(
                             tabPanel("Output",
-                                     dataTableOutput("contents")
+                                     DT::dataTableOutput("contents")
                             ),
                             tabPanel("Help",
                                      br(),
@@ -114,7 +118,7 @@ ui <- fluidPage(
                         mainPanel(
                           tabsetPanel(
                             tabPanel("Output",
-                                     dataTableOutput("contents.tab2")
+                                     DT::dataTableOutput("contents.tab2")
                             ),
                             tabPanel("Help",
                                      br(),
@@ -866,7 +870,7 @@ server <- function(input, output,session) {
   
   
   
-  output$contents <- renderDataTable({
+  output$contents <- DT::renderDataTable({
     if (input$action == 0)
       return()
     isolate({ 
@@ -1472,7 +1476,7 @@ server <- function(input, output,session) {
   })
   
   
-  output$contents.tab2 <- renderDataTable({
+  output$contents.tab2 <- DT::renderDataTable({
     if (input$action.tab2 == 0)
       return()
     isolate({ 
